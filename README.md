@@ -139,5 +139,18 @@ that prioritizes simplicity of implementation. Furthermore, this repository will
 host a reference CSV-LD processor implementation, written in Python. Perhaps the
 reference implementation will be good enough for most.
 
+One thing to note here is that the job of the data producer is to aggregate a
+set of records (rows) with well-defined fields (columns). What a record *is* or
+should be*, i.e. it's type or class, and thus e.g. which columns are required,
+is left open to data consumers depending on the application.
 
+Validating a record as a whole is important, and the CSVW metadata spec can help
+with this task. I expect to elaborate later on how exactly a CSV-LD processor
+may be invoked e.g. as
 
+```
+csvld --entity "http://example.org/nmdc/BioSample" --out data.json data.csv
+```
+
+to validate each row of the CSV-LD, in addition to independently validating each
+column value.
