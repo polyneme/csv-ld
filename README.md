@@ -1,2 +1,143 @@
-# csv-ld
-A CSV-based Serialization for Linked Data
+# CSV-LD: A CSV-based Serialization for Linked Data
+
+Comma-separated-values (CSV) is a useful data serialization and sharing format.
+This document introduces the idea of CSV-LD as a CSV-based format to serialize
+Linked Data, mirroring the way that [JSON-LD](https://www.w3.org/TR/json-ld11/)
+is a JSON-based format to serialize Linked Data. "CSV" here includes any dialect
+that uses a different delimiter, such as tab-separated-values (TSV).
+
+The syntax of CSV-LD is designed to easily integrate into deployed systems that
+already use CSV, and provides a smooth upgrade path from CSV to CSV-LD. It is
+primarily intended to be a way to use Linked Data as part of spreadsheet-based
+data entry; to facilitate data validation, display, and conversion of CSV into
+other formats via use of [CSV on the Web (CSVW)
+metadata](https://www.w3.org/ns/csvw); and to build
+[FAIR](https://doi.org/10.1038/sdata.2016.18) data services.
+
+The term "CSV-LD" was previously used to describe [a now-obsoleted
+precursor](https://github.com/gkellogg/csv-ld) to the [CSVW
+specifications](https://www.w3.org/2013/csvw/wiki/Main_Page); both approaches
+require a second file, a JSON-LD template document, to be shared along with a
+CSV file. The approach described herein, in contrast, requires only a CSV file
+from the data producer, one that includes links to CSVW-powered metadata.
+
+## Data Producers
+
+Data producers need to add two header rows to their CSV to make it CSV-LD: the
+"key-spec" row, and the "column-spec" row. This mirrors the way that JSON can
+minimally be made JSON-LD by adding a "@context" key-value pair. CSV producers
+commonly include a header row to label columns with names, and it is not
+uncommon to see CSV files with additional header rows (`headerRowCount` is part
+of the [CSVW vocabulary](https://www.w3.org/ns/csvw)).
+
+### The Key-Spec Row
+
+The most important job of the top-most row, the key-spec row, is not at all
+about specifying keys. Rather, it is to communicate to a data consumer that this
+file is special in some way -- the left-most cell must have a URL in it, and
+hopefully, someone who has never seen CSV-LD before will click on the link.
+
+The link is `http://example.org/csv-ld/2021/01/inKey` (not really, but I'll
+change this soon -- I registered `csv-ld.org` and currently point it to the CSVW
+vocabulary page), and it will provide a friendly introduction to CSV-LD. The
+file could indicate that it uses a different version of CSV-LD by using a
+different prefix before `inKey`, which would link to that version's page.
+
+The page will also explain that `inKey` marks a CSV column as being part of how
+to identify a row uniquely. A CSV table could have a single key, such as an ID
+column, or a compound key, such as year and semester (e.g. "Fall", "Spring")
+uniquely identifying each row as an academic term. All key columns must be
+contiguous and start on the left side -- this (1) makes the links easy to spot
+for someone unfamiliar with CSV-LD, and (2) makes it easier for a data
+consumer/steward to implement a CSV-LD processor.
+
+Cell values in the key-spec row after (to the right of) the key columns (the
+columns containing the `inKey` link) have only one requirement: they cannot have
+the same `inKey`-link value as the key-column cells. They can be blank,
+comments, whatever.
+
+So, to summarize, the key-spec row (1) communicates that the file is a CSV-LD
+file, and (2) communicates the (possibly compound) key that uniquely identifies
+a row.
+
+### The Column-Spec Row
+
+The job of the column-spec row is to be an unambiguous labeling of each column.
+It is fine for there to be a header row below the column-spec row that exhibits
+the common header-row practice of using short names ("x", "y", etc.) as column
+labels.
+
+For a data producer, this task should be a simple matter of using a template or
+reference guide authored by a data steward that provides URLs for each column of
+interest. For example, one might be given the following table of terms to record
+environmental metadata for collected biosamples:
+
+|Term URL|Comment|
+|---|---|
+|http://example.org/nmdc/id|Sample ID|
+|http://example.org/nmdc/lat_lon|Latitude and longitude|
+|http://example.org/nmdc/ecosystem|Type of ecosystem|
+|...|...|
+
+These aren't real URLs (but I'll eventually update this example to be real).
+It's also possible that a data steward may provide namespaces for data
+producers, e.g. `http://example.org/nmdc/team42/`, and producers can use the
+namespaces to prefix invented terms that will later resolve to working URLs
+through work done by the data steward.
+
+The term URLs should resolve to pages that explain how values should be
+formatted. For example, `http://example.org/nmdc/lat_lon` could explain that the
+value should be latitude in degrees, a space, and longitude in degrees. This
+explanation could be automatically generated by CSVW metadata (authored by the
+data steward) that will also be used by a CSV-LD processor to validate the data.
+For example, the CSVW metadata for this field could look like
+```json
+{
+  "@context": {"@vocab": "http://www.w3.org/ns/csvw#"},
+  "name": "lat_long",
+  "separator": " ",
+  "ordered": true,
+  "datatype": {
+    "base": "number",
+    "minimum": "-180",
+    "maximum": "180"
+  }
+}
+```
+
+## Data Consumers
+
+A CSV-LD file is still just a CSV file, so a data consumer can simply ignore the
+"extra" headers rows. They could also click any link in the column-spec header
+to learn more about how to interpret the data in that column. If they have
+access to a CSV-LD processor, they can use it to validate the data and/or
+convert it to another format like JSON (i.e., JSON-LD).
+
+## Data Stewards
+
+Data stewards are concerned with managing data integrity. They can author
+JSON-LD metadata for `csvw:Column` entities, as shown in the above example for
+`http://example.org/nmdc/lat_lon`, and make that metadata downloadable from the
+URL used for the column.
+
+A CSV-LD processor will request `http://example.org/nmdc/lat_lon` using an HTTP
+`Accept` header that expresses a preference for a JSON-LD response, whereas a
+human loading `http://example.org/nmdc/lat_lon` in their browser will get a web
+page (HTML) response that the data steward has produced (perhaps auto-generated
+from the metadata JSON-LD).
+
+Thus, a data steward needs know how to serve web content, or needs to
+collaborate with someone who can. I hope to provide in this repository a
+reference server implementation, written in Python.
+
+## Implementers of CSV-LD Processors
+
+The final stakeholder in the CSV-LD world is the implementer of a CSV-LD
+processor. A more detailed specification is to come, but I will try to adhere to
+a ["worse is better"](https://en.wikipedia.org/wiki/Worse_is_better) approach
+that prioritizes simplicity of implementation. Furthermore, this repository will
+host a reference CSV-LD processor implementation, written in Python. Perhaps the
+reference implementation will be good enough for most.
+
+
+
