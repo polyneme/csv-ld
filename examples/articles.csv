@@ -1,5 +1,5 @@
-http://example.org/csv-ld/2021/01/inKey,example adapted from https://www.w3.org/TR/2016/NOTE-csvw-ucr-20160225/#h-uc-journalarticlesearch,,
-http://example.org/csv-ld/doi,http://example.org/csv-ld/datetime.isoformat,http://example.org/plos/title,http://example.org/plos/authors
+#http://example.org/csv-ld/2021/01/inKey,example adapted from https://www.w3.org/TR/2016/NOTE-csvw-ucr-20160225/#h-uc-journalarticlesearch,,
+#http://example.org/csv-ld/doi,http://example.org/csv-ld/datetime.isoformat,http://example.org/plos/title,http://example.org/plos/authors
 doi,publication_date,title_display,author
 10.1371/journal.pone.0095131,2014-06-05T00:00:00Z,"Genotyping of French <i>Bacillus anthracis</i> Strains Based on 31-Loci Multi Locus VNTR Analysis: Epidemiology, Marker Evaluation, and Update of the Internet Genotype Database","Simon Thierry,Christophe Tourterel,Philippe Le Flèche,Sylviane Derzelle,Neira Dekhil,Christiane Mendy,Cécile Colaneri,Gilles Vergnaud,Nora Madani"
 10.1371/journal.pone.0095156,2014-06-05T00:00:00Z,Pathways Mediating the Interaction between Endothelial Progenitor Cells (EPCs) and Platelets,"Oshrat Raz,Dorit L Lev,Alexander Battler,Eli I Lev"
