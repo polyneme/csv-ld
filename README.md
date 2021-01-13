@@ -108,10 +108,13 @@ For example, the CSVW metadata for this field could look like
 ## Data Consumers
 
 A CSV-LD file is still just a CSV file, so a data consumer can simply ignore the
-"extra" headers rows. They could also click any link in the column-spec header
-to learn more about how to interpret the data in that column. If they have
-access to a CSV-LD processor, they can use it to validate the data and/or
-convert it to another format like JSON (i.e., JSON-LD).
+"extra" headers rows. Each of the "extra" header rows is prefixed by a "#" and a
+space, so that popular parsers can recognize these rows as "comment" lines and
+skip to the "real" header row, e.g. `pandas.read_csv(...,comment="#")` for the
+popular Python `pandas` data-processing library. They could also click any link
+in the column-spec header to learn more about how to interpret the data in that
+column. If they have access to a CSV-LD processor, they can use it to validate
+the data and/or convert it to another format like JSON (i.e., JSON-LD).
 
 ## Data Stewards
 
