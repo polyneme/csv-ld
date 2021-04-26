@@ -1,0 +1,24 @@
+@prefix csvld: <https://ns.csv-ld.org/2021/04/csv-ld/core#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://ns.csv-ld.org/2021/04/csv-ld/core> a owl:Ontology ;
+    rdfs:label "The CSV-LD Core Ontology" ;
+    rdfs:comment """
+  This ontology provides some core classes and properties for CSV-LD.
+    """ ;
+    rdfs:seeAlso <https://github.com/polyneme/csv-ld>, <https://www.csv-ld.org> ;
+    owl:versionIRI <https://ns.csv-ld.org/2021/04/csv-ld/core> ;
+    owl:versionInfo "2021-04-26T19:30:00Z"^^xsd:dateTime .
+
+csvld:formatVersion a owl:DatatypeProperty ;
+    rdfs:label "CSV-LD Format Version" ;
+    rdfs:comment """
+  The version of CSV-LD for which this sheet should be interpreted.
+  The object of this property should be the owl:versionIRI of a CSV-LD core ontology.
+    """ ;
+    rdfs:range xsd:anyURI ;
+    skos:example: <https://ns.csv-ld.org/2021/04/csv-ld/core> .
